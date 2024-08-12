@@ -81,4 +81,4 @@ yast 可以新增帳號，或是使用 useradd, userdel。帳號 id 範圍為 0 
 'rpm -ql mlocate' 確認mlocate裝載完成
 
 3 install pattern devel_kernel
-'zypper in devel_pattern' 在可用的repo中找尋所求的pattern再進行安裝
+'zypper in devel_kernel' 在可用的repo中找尋所求的pattern再進行安裝
