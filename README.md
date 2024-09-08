@@ -219,3 +219,37 @@ NIS使用幾個基於RPC的服務，通常在以下端口和協議上運行：
 通過防火牆允許NIS通信：sudo ufw allow from <client-ip> to any port 111,834,835,836
 重新加載防火牆：sudo ufw reload
 啟用防火牆：sudo ufw enable
+
+'20240902'
+1.nfs
+NFS 系統即為Network File System 的簡稱，讓不同的機器及作業系統可以不同的分享檔案。
+1.1 setup nfs server and client
+'yast' 確認是否有NFS Server的選項
+若無，'zypper in -y yast2-nfs-server' 在yast 中加入NFS Server。
+進到NFS Server 中勾選'Start'
+'Alt D'開啟資料夾給其他人放資料 (！不可以是根目錄)
+'192.168.1.0/24' 將此NFS 只開放在此網域下。
+權限的部分，將ro (read-only) 改成rw (read-write)。sync 則代表資料會同步寫入到記憶體及硬碟中。若要允許他人用root 的身分，則要開no_root_squash。
+'rpcinfo' 確認rpc 有支援nfs 成功。
+'showmount -e localhost' 確認剛剛設定好相關exports 分享的目錄資訊。
+
+進到client的部分
+'yast' 'NFS Client' 進到NFS 的客戶端。
+將client 的ip 位址加入到剛剛的資料夾中。
+
+
+
+1-2 use /etc/fstab
+1-3* list file/dir of server config
+1-4 service port and protocol
+1-5 setup nis with enable firewall
+    
+2. ntp
+2-1 chrony
+2-2* ntpserver & ntpdate/sntp 
+2-3 timedatectl / systemd-timesync 設定
+
+chmod 777 v.s. chmod 1777
+rwxrwxrwx v.s. rwxrwxrwt
+讓所有的用戶都有讀取寫入執行等全部權限 v.s. 權限與777相同，但多了一黏滯位t 可防止用戶任意刪除他人的文件
+
