@@ -240,22 +240,47 @@ NFS 系統即為Network File System 的簡稱，讓不同的機器及作業系�
 'yast' 'NFS Client' 進到NFS 的客戶端。
 將server 的ip 位址(192.168.1.1)連到client，同時設定連到剛剛/work 的遠端資料夾。
 
+1.2 use /etc/fstab
+NFS無法直接使用開機即自動掛載的 /etc/fstab 但可透過下面的紙應來達成。
+'vim /etc/rc.d/rc.local'
+mount -t nfs -o nosuid,noexec,nodev,rw,bg,soft,rsize=32768,wsize=32768 \
+192.168.100.254:/home/public /home/nfs/public
 
+1.3* list file/dir of server config
+'cat /etc/exports' 可以看到目前NFS出口的設置，包含(rw,no_root_squash...)等資訊。
+'showmount -e localhost'
 
+1.4 service port and protocol
+NFS 通常使用以下端口：
+TCP/UDP 2049：NFS 本身的端口。
+111 端口（TCP 和 UDP）：Portmapper 服務，用於映射 RPC 服務的端口號。
+要檢查當前 NFS 使用的端口：'rpcinfo -p'
 
-1-2 use /etc/fstab
-1-3* list file/dir of server config
-1-4 service port and protocol
-1-5 setup nis with enable firewall
-    
+1.5 setup nis with enable firewall
+安裝 NIS：
+在伺服器和客戶端安裝 NIS：sudo apt install nis
+設置 NIS 域名：'sudo domainname mynisdomain'    'echo "mynisdomain" | sudo tee /etc/defaultdomain'
+NIS 伺服器配置：
+編輯 /etc/yp.conf 文件，設置 NIS 域名和伺服器。
+啟動並啟用 ypserv 服務：'sudo systemctl start ypserv'    'sudo systemctl enable ypserv'
+NIS 客戶端配置：
+添加 NIS 域名到 /etc/yp.conf。
+編輯 /etc/nsswitch.conf 文件，配置使用 NIS 來解析 passwd、group 等服務。
+防火牆設置：
+使用 iptables 或 firewalld 開啟與 NIS 相關的流量（如 111 和 2049 端口）：'sudo ufw allow 111/tcp'    'sudo ufw allow 111/udp'    'sudo ufw allow 2049/tcp'    'sudo ufw allow 2049/udp'
+
 2. ntp
 NTP 即是Network Time Protocol，用作調整電腦中的時區等功能。
-2-1 chrony
+2.1 chrony
 'chronyc' 是client端 'chronyd' 是server端
 'yast' 'NTP Configuration' 勾選'Now and on Boot'
-2-2* ntpserver & ntpdate/sntp
+
+2.2* ntpserver & ntpdate/sntp
 'ntpdate time.stdtime.gov.tw' 即可將電腦的時區調整至台灣的時區。(需確認是否有連到外網)
-2-3 timedatectl / systemd-timesync 設定
+
+2.3 timedatectl / systemd-timesync 設定
+使用 timedatectl 配置時間同步：'sudo timedatectl set-ntp true'   'sudo systemctl restart systemd-timesyncd'
+檢查時間同步狀態：'timedatectl status'
 
 [註一]
 chmod 777 v.s. chmod 1777
